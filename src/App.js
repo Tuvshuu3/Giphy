@@ -1,24 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import Search from './search';
 
-function App() {
+const App = () => {
+  const [search, setSearch] = useState("");
+  const [data, setData] = useState(null);
+  const [toggle, setToggle] = useState(false);
+
+  useEffect(() => {
+    axios
+      .get("https://api.giphy.com/v1/gifs/search", {
+        params: {
+          api_key: "biC5WfOcRVwgK3LR6d1Fhk55GTrARJeR",
+          q: search,
+          limit: 10,
+        },
+      })
+      .then((res) => {
+        let s = res.data.data;
+        setData(s);
+        setToggle(false);
+      });
+  }, [search])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Search search={search} setSearch={setSearch}/>
+
+      <div>
+        {data &&
+        data.map((el) => {
+          return <img src={el.images.original.url} />;
+        })}
+       </div>
     </div>
+    
   );
 }
 
